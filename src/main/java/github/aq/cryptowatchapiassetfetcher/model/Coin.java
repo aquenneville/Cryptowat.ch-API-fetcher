@@ -84,7 +84,7 @@ public class Coin {
 
 	@Override
 	public String toString() {
-		Gson gson = new GsonBuilder().create();
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		return gson.toJson(this);
 	}
 

@@ -1,5 +1,8 @@
 package github.aq.cryptowatchapiassetfetcher.model;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 /**
  * 
  * @author IT059959 This is the Java representation of a Market A Market have a
@@ -28,8 +31,8 @@ public class Market {
 
 	@Override
 	public String toString() {
-		return "Market [marketName=" + marketName + ", coinName=" + coinName + ", price=" + price + ", urlTrade="
-				+ urlTrade + "]";
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		return gson.toJson(this);
 	}
 
 	public String getMarketName() {
