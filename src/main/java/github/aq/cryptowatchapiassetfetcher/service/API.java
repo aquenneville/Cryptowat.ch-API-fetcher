@@ -9,6 +9,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -18,6 +20,7 @@ import github.aq.cryptowatchapiassetfetcher.model.Market;
 
 public class API {
 
+	static int coinCount = 0;
 	public Dumper dumper;
 
 	// This is the list of Main coin (ETH,BTC)
@@ -53,7 +56,7 @@ public class API {
 				}
 				System.out.println(coin.toString());
 				try {
-					Dumper.dumpToFile(coin.toString(), "cryptowat-coin.json");
+					Dumper.dumpToFile(coin.toString(), "storage/cryptowatch-assets-" + coin.getName().toLowerCase() + ".json");
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -64,6 +67,15 @@ public class API {
 
 		for (Coin coin : myCoin) {
 			System.out.println(coin.toString());
+		}
+		try {
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			String assetListInJson = gson.toJson(myCoin);
+			Dumper.dumpToFile(assetListInJson, "storage/cryptowatch-assets-list.json");
+			System.out.println("coin count: "+coinCount);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
@@ -86,6 +98,7 @@ public class API {
 			String name = element.getAsJsonObject().get("name").getAsString();
 			boolean fiat = Boolean.valueOf(element.getAsJsonObject().get("fiat").getAsBoolean());
 			myCoin.add(new Coin(name, symbol, fiat));
+			coinCount ++;
 		}
 
 		for (Coin coin : myCoin) {
@@ -94,13 +107,13 @@ public class API {
 
 	}
 
-	public float getPrice(Market market) throws MalformedURLException {
-		String url = market.getUrlTrade() + "/price";
-		JsonElement element = new JsonObject();
-		element = getJSON(url).get("result").getAsJsonArray();
-		String price = element.getAsJsonObject().get("price").getAsString();
-		return Float.valueOf(price);
-	}
+//	public float getPrice(Market market) throws MalformedURLException {
+//		String url = market.getUrlTrade() + "/price";
+//		JsonElement element = new JsonObject();
+//		element = getJSON(url).get("result").getAsJsonArray();
+//		String price = element.getAsJsonObject().get("price").getAsString();
+//		return Float.valueOf(price);
+//	}
 
 	public float getPrice(String urlMarket) throws MalformedURLException {
 		String url = urlMarket + "/price";
