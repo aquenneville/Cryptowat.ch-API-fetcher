@@ -1,4 +1,4 @@
-package backend;
+package github.aq.cryptowatchapiassetfetcher.service;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;

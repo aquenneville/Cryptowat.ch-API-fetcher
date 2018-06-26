@@ -1,4 +1,4 @@
-package backend;
+package github.aq.cryptowatchapiassetfetcher.service;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,8 +13,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import coin.Coin;
-import market.Market;
+import github.aq.cryptowatchapiassetfetcher.model.Coin;
+import github.aq.cryptowatchapiassetfetcher.model.Market;
 
 public class API {
 
@@ -23,11 +23,11 @@ public class API {
 	// This is the list of Main coin (ETH,BTC)
 	public List<Coin> myCoin;
 
-	public String assets = "https://api.cryptowat.ch/assets"; // this API will be used for retrieve every coin info
+	public String ASSETS_URL = "https://api.cryptowat.ch/assets"; // this API will be used for retrieve every coin info
 
 	/**
-	 * This method fetch every coin from cryptowat.ch and load them into a Data
-	 * structure useful for further analysis For every coin, it populate the data
+	 * This method fetches every coin from cryptowat.ch and loads them into a Data
+	 * structure useful for further analysis.The application populates the data for every coin:
 	 * relative to the: Name, link for get price
 	 * 
 	 * @throws MalformedURLException
@@ -36,7 +36,7 @@ public class API {
 		this.getAllCoin();
 		for (Coin coin : myCoin) {
 			if (!coin.isFiat()) {
-				String url = assets + "/" + coin.getSymbol();
+				String url = ASSETS_URL + "/" + coin.getSymbol();
 				JsonElement assetsList = new JsonObject();
 				// Filter only the result
 				assetsList = getJSON(url).get("result");
@@ -53,7 +53,7 @@ public class API {
 				}
 				System.out.println(coin.toString());
 				try {
-					Dumper.dumpToFile(coin.toString(), "cryptowat-coin");
+					Dumper.dumpToFile(coin.toString(), "cryptowat-coin.json");
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -68,7 +68,7 @@ public class API {
 	}
 
 	/**
-	 * This method load every coin in the myCoin List Is used for load every coin
+	 * This method loads every coin in the myCoin List and is used for loading every coin
 	 * name for further analysis
 	 * 
 	 * @param URL
@@ -80,7 +80,7 @@ public class API {
 	public void getAllCoin() throws MalformedURLException {
 		myCoin = new ArrayList<Coin>();
 		JsonElement assetsList = new JsonObject();
-		assetsList = getJSON(assets).get("result").getAsJsonArray();
+		assetsList = getJSON(ASSETS_URL).get("result").getAsJsonArray();
 		for (JsonElement element : assetsList.getAsJsonArray()) {
 			String symbol = element.getAsJsonObject().get("symbol").getAsString();
 			String name = element.getAsJsonObject().get("name").getAsString();

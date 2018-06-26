@@ -1,17 +1,18 @@
-package coin;
+package github.aq.cryptowatchapiassetfetcher.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import market.Market;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * 
  * @author IT059959
  * 
- *         This is the Java rappresentation of a Coin. A coin have a name, a
- *         list of market, and an average price, that is the average of all
- *         price in every exchagne
+ *         This is the Java representation of an Coin/Asset. A coin has a name, a
+ *         list of markets, and an average price, that is the average of all
+ *         prices in every exchange
  * 
  */
 public class Coin {
@@ -21,7 +22,7 @@ public class Coin {
 	public boolean fiat; // fiat=true,crypto=false
 	public List<Market> market;
 	/*
-	 * Pair is the aggretation beetween the the base currency & the market of the
+	 * Pair is the aggregation between the the base currency & the market of the
 	 * coin
 	 */
 
@@ -83,8 +84,8 @@ public class Coin {
 
 	@Override
 	public String toString() {
-		return "Coin=" + this.name + ", symbol=" + this.symbol + ", fiat=" + this.fiat + ", market="
-				+ this.getMarket().toString() + "]";
+		Gson gson = new GsonBuilder().create();
+		return gson.toJson(this);
 	}
 
 }

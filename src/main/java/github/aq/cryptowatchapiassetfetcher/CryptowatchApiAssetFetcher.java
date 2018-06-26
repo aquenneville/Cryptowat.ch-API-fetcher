@@ -1,8 +1,8 @@
+package github.aq.cryptowatchapiassetfetcher;
 import java.net.MalformedURLException;
+import github.aq.cryptowatchapiassetfetcher.service.API;
 
-import backend.API;
-
-public class Main {
+public class CryptowatchApiAssetFetcher {
 
 	static API api;
 

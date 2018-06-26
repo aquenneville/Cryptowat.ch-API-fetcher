@@ -1,4 +1,4 @@
-package market;
+package github.aq.cryptowatchapiassetfetcher.model;
 
 /**
  * 
