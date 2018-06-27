@@ -83,7 +83,7 @@ public class CryptowatchApiCrawler {
 		String coinsByExchange = gson.toJson(coinByExchange);
 		Dumper.dumpToFile(coinsByExchange, "storage/cryptowatch-assets-by-exchange.json");
 		
-	    String coinsByExchangeCount = gson.toJson(coinByExchange);
+	    String coinsByExchangeCount = gson.toJson(coinByExchangeCount);
 	    Dumper.dumpToFile(coinsByExchangeCount, "storage/cryptowatch-assets-by-exchange-count.json");
 		
 		String exchangesByCoin = gson.toJson(exchangeByCoin);
