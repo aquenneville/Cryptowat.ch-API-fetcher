@@ -32,6 +32,7 @@ public class CryptowatchApiCrawler {
 	// This is the list of Main coin (ETH,BTC)
 	public List<Coin> coinList = new ArrayList<Coin>();
 	Map<String, Set<Coin>> coinByExchange = new HashMap<String, Set<Coin>>();
+	Map<String, Integer> coinByExchangeCount = new HashMap<String, Integer>();
 	Map<String, Set<String>> exchangeByCoin = new HashMap<String, Set<String>>();
 	public String ASSETS_URL = "https://api.cryptowat.ch/assets"; // this API will be used for retrieve every coin info
 
@@ -82,8 +83,12 @@ public class CryptowatchApiCrawler {
 		String coinsByExchange = gson.toJson(coinByExchange);
 		Dumper.dumpToFile(coinsByExchange, "storage/cryptowatch-assets-by-exchange.json");
 		
+	    String coinsByExchangeCount = gson.toJson(coinByExchange);
+	    Dumper.dumpToFile(coinsByExchangeCount, "storage/cryptowatch-assets-by-exchange-count.json");
+		
 		String exchangesByCoin = gson.toJson(exchangeByCoin);
 		Dumper.dumpToFile(exchangesByCoin, "storage/cryptowatch-exchanges-by-coins.json");
+
 	}
 
 	private void collectExchangeByCoin(Coin coin, String exchangeName) {
@@ -116,11 +121,13 @@ public class CryptowatchApiCrawler {
 			coin.setMarket(null);
 			coins.add(coin);
 			coinByExchange.put(exchangeName, coins);
+			coinByExchangeCount.put(exchangeName, 1);
 		} else {
 			Set<Coin> set = coinByExchange.get(exchangeName);
 			coin.setMarket(null);
 			set.add(coin);
 			coinByExchange.put(exchangeName, set);
+			coinByExchangeCount.put(exchangeName, coinByExchangeCount.get(exchangeName) + 1);
 		}
 		
 	}
