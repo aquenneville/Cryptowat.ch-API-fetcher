@@ -9,8 +9,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,8 +33,8 @@ public class CryptowatchApiCrawler {
 
 	// This is the list of Main coin (ETH,BTC)
 	public List<Coin> coinList = new ArrayList<Coin>();
-	Map<String, List<Coin>> coinByExchange = new HashMap<String, List<Coin>>();
-	Map<Coin, List<String>> exchangeByCoin = new HashMap<Coin, List<String>>();
+	Map<String, Set<Coin>> coinByExchange = new HashMap<String, Set<Coin>>();
+	Map<String, Set<String>> exchangeByCoin = new HashMap<String, Set<String>>();
 	public String ASSETS_URL = "https://api.cryptowat.ch/assets"; // this API will be used for retrieve every coin info
 
 	/**
@@ -98,14 +100,14 @@ public class CryptowatchApiCrawler {
 
 	private void collectExchangeByCoin(Coin coin, String exchangeName) {
 		// TODO Auto-generated method stub
-		if (!exchangeByCoin.containsKey(coin)) {
-			List<String> exchanges = new ArrayList<String>();
+		if (!exchangeByCoin.containsKey(coin.getName())) {
+			Set<String> exchanges = new HashSet<String>();
 			exchanges.add(exchangeName);
-			exchangeByCoin.put(coin, exchanges);
+			exchangeByCoin.put(coin.getName(), exchanges);
 		} else {
-			List<String> list = exchangeByCoin.get(coin);
-			list.add(exchangeName);
-			exchangeByCoin.put(coin, list);
+			Set<String> set = exchangeByCoin.get(coin.getName());
+			set.add(exchangeName);
+			exchangeByCoin.put(coin.getName(), set);
 		}
 	}
 
@@ -122,13 +124,15 @@ public class CryptowatchApiCrawler {
 	private void collectCoinByExchange(Coin coin, String exchangeName) {
 
 		if (!coinByExchange.containsKey(exchangeName)) {
-			List<Coin> coins = new ArrayList();
+			Set<Coin> coins = new HashSet<Coin>();
+			coin.setMarket(null);
 			coins.add(coin);
 			coinByExchange.put(exchangeName, coins);
 		} else {
-			List<Coin> list = coinByExchange.get(exchangeName);
-			list.add(coin);
-			coinByExchange.put(exchangeName, list);
+			Set<Coin> set = coinByExchange.get(exchangeName);
+			coin.setMarket(null);
+			set.add(coin);
+			coinByExchange.put(exchangeName, set);
 		}
 		
 	}
@@ -191,11 +195,5 @@ public class CryptowatchApiCrawler {
 		return oggetto;
 	}
 	
-//	public float getPrice(Market market) throws MalformedURLException {
-//	String url = market.getUrlTrade() + "/price";
-//	JsonElement element = new JsonObject();
-//	element = getJSON(url).get("result").getAsJsonArray();
-//	String price = element.getAsJsonObject().get("price").getAsString();
-//	return Float.valueOf(price);
-//}
+
 }
