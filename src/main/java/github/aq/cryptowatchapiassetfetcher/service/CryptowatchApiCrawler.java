@@ -97,10 +97,12 @@ public class CryptowatchApiCrawler {
 			Set<String> exchanges = new HashSet<String>();
 			exchanges.add(exchangeName);
 			exchangeByCoin.put(coin.getName(), exchanges);
+			coinByExchangeCount.put(coin.getName(), 1);
 		} else {
 			Set<String> set = exchangeByCoin.get(coin.getName());
 			set.add(exchangeName);
 			exchangeByCoin.put(coin.getName(), set);
+			coinByExchangeCount.put(coin.getName(), coinByExchangeCount.get(coin.getName()) + 1);
 		}
 	}
 
@@ -121,13 +123,13 @@ public class CryptowatchApiCrawler {
 			coin.setMarket(null);
 			coins.add(coin);
 			coinByExchange.put(exchangeName, coins);
-			coinByExchangeCount.put(exchangeName, 1);
+			
 		} else {
 			Set<Coin> set = coinByExchange.get(exchangeName);
 			coin.setMarket(null);
 			set.add(coin);
 			coinByExchange.put(exchangeName, set);
-			coinByExchangeCount.put(exchangeName, coinByExchangeCount.get(exchangeName) + 1);
+			
 		}
 		
 	}
