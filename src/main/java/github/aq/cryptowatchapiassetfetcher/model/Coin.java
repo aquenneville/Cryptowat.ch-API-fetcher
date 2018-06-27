@@ -8,7 +8,7 @@ import com.google.gson.GsonBuilder;
 
 /**
  * 
- * @author IT059959
+ * @author 
  * 
  *         This is the Java representation of an Coin/Asset. A coin has a name, a
  *         list of markets, and an average price, that is the average of all
@@ -21,10 +21,6 @@ public class Coin {
 	public String symbol;
 	public boolean fiat; // fiat=true,crypto=false
 	public List<Market> market;
-	/*
-	 * Pair is the aggregation between the the base currency & the market of the
-	 * coin
-	 */
 
 	public Coin() {
 
@@ -36,7 +32,6 @@ public class Coin {
 		this.symbol = symbol;
 		this.fiat = fiat;
 		this.market = new ArrayList<Market>();
-
 	}
 
 	public boolean addMarket(Market market) {

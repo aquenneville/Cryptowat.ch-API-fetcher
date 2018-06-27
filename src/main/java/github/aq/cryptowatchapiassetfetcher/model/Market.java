@@ -5,8 +5,10 @@ import com.google.gson.GsonBuilder;
 
 /**
  * 
- * @author IT059959 This is the Java representation of a Market A Market have a
- *         Name, an URL, an a list of Coin
+ * @author  
+ * 
+ *         This is the Java representation of a Market: A Market has a
+ *         Name, an URL, an a list of Coin instances.
  *
  */
 

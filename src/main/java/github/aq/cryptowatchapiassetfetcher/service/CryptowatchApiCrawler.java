@@ -7,7 +7,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -29,7 +28,6 @@ public class CryptowatchApiCrawler {
 
 	static int coinCount = 0;
 	public Dumper dumper;
-	
 
 	// This is the list of Main coin (ETH,BTC)
 	public List<Coin> coinList = new ArrayList<Coin>();
@@ -68,34 +66,24 @@ public class CryptowatchApiCrawler {
 					}
 				}
 				System.out.println(coin.toString());
-				try {
-					Dumper.dumpToFile(coin.toString(), "storage/cryptowatch-assets-" + coin.getName().toLowerCase() + ".json");
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
+				Dumper.dumpToFile(coin.toString(), "storage/cryptowatch-assets-" + coin.getName().toLowerCase() + ".json");
 			}
 		}
 
 		for (Coin coin : coinList) {
 			System.out.println(coin.toString());
 		}
-		try {
-			Gson gson = new GsonBuilder().setPrettyPrinting().create();
-			String assetListInJson = gson.toJson(coinList);
-			Dumper.dumpToFile(assetListInJson, "storage/cryptowatch-assets-list.json");
-			System.out.println("coin count: "+coinCount);
-			
-			String coinsByExchange = gson.toJson(coinByExchange);
-			Dumper.dumpToFile(coinsByExchange, "storage/cryptowatch-assets-by-exchange.json");
-			
-			String exchangesByCoin = gson.toJson(exchangeByCoin);
-			Dumper.dumpToFile(exchangesByCoin, "storage/cryptowatch-exchanges-by-coins.json");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		String assetListInJson = gson.toJson(coinList);
+		Dumper.dumpToFile(assetListInJson, "storage/cryptowatch-assets-list.json");
+		System.out.println("coin count: "+coinCount);
+		
+		String coinsByExchange = gson.toJson(coinByExchange);
+		Dumper.dumpToFile(coinsByExchange, "storage/cryptowatch-assets-by-exchange.json");
+		
+		String exchangesByCoin = gson.toJson(exchangeByCoin);
+		Dumper.dumpToFile(exchangesByCoin, "storage/cryptowatch-exchanges-by-coins.json");
 	}
 
 	private void collectExchangeByCoin(Coin coin, String exchangeName) {
