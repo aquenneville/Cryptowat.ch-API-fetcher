@@ -7,7 +7,12 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -18,14 +23,16 @@ import com.google.gson.JsonParser;
 import github.aq.cryptowatchapiassetfetcher.model.Coin;
 import github.aq.cryptowatchapiassetfetcher.model.Market;
 
-public class API {
+public class CryptowatchApiCrawler {
 
 	static int coinCount = 0;
 	public Dumper dumper;
+	
 
 	// This is the list of Main coin (ETH,BTC)
-	public List<Coin> myCoin;
-
+	public List<Coin> coinList = new ArrayList<Coin>();
+	Map<String, List<Coin>> coinByExchange = new HashMap<String, List<Coin>>();
+	Map<Coin, List<String>> exchangeByCoin = new HashMap<Coin, List<String>>();
 	public String ASSETS_URL = "https://api.cryptowat.ch/assets"; // this API will be used for retrieve every coin info
 
 	/**
@@ -35,9 +42,9 @@ public class API {
 	 * 
 	 * @throws MalformedURLException
 	 */
-	public void getCoin() throws MalformedURLException {
-		this.getAllCoin();
-		for (Coin coin : myCoin) {
+	public void crawl() throws MalformedURLException {
+		this.getAllCoins();
+		for (Coin coin : coinList) {
 			if (!coin.isFiat()) {
 				String url = ASSETS_URL + "/" + coin.getSymbol();
 				JsonElement assetsList = new JsonObject();
@@ -52,6 +59,10 @@ public class API {
 						String urlTrade = element.getAsJsonObject().get("route").getAsString();
 						Market market = new Market(marketName, coinName, urlTrade, getPrice(urlTrade));
 						coin.addMarket(market);
+						
+						//String exchangeName = parseExchangeName(urlTrade);
+						collectCoinByExchange(coin, marketName);
+						collectExchangeByCoin(coin, marketName);
 					}
 				}
 				System.out.println(coin.toString());
@@ -65,18 +76,61 @@ public class API {
 			}
 		}
 
-		for (Coin coin : myCoin) {
+		for (Coin coin : coinList) {
 			System.out.println(coin.toString());
 		}
 		try {
 			Gson gson = new GsonBuilder().setPrettyPrinting().create();
-			String assetListInJson = gson.toJson(myCoin);
+			String assetListInJson = gson.toJson(coinList);
 			Dumper.dumpToFile(assetListInJson, "storage/cryptowatch-assets-list.json");
 			System.out.println("coin count: "+coinCount);
+			
+			String coinsByExchange = gson.toJson(coinByExchange);
+			Dumper.dumpToFile(coinsByExchange, "storage/cryptowatch-assets-by-exchange.json");
+			
+			String exchangesByCoin = gson.toJson(exchangeByCoin);
+			Dumper.dumpToFile(exchangesByCoin, "storage/cryptowatch-exchanges-by-coins.json");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	private void collectExchangeByCoin(Coin coin, String exchangeName) {
+		// TODO Auto-generated method stub
+		if (!exchangeByCoin.containsKey(coin)) {
+			List<String> exchanges = new ArrayList<String>();
+			exchanges.add(exchangeName);
+			exchangeByCoin.put(coin, exchanges);
+		} else {
+			List<String> list = exchangeByCoin.get(coin);
+			list.add(exchangeName);
+			exchangeByCoin.put(coin, list);
+		}
+	}
+
+	private String parseExchangeName(String urlTrade) {
+		Pattern pattern = Pattern.compile("(?<=markets\\/)(.*?)\\/");
+		Matcher matcher = pattern.matcher(urlTrade);
+		String exchangeName = "unknown";
+		if (matcher.find()) {
+			exchangeName = matcher.group();
+		}
+		return exchangeName;
+	}
+
+	private void collectCoinByExchange(Coin coin, String exchangeName) {
+
+		if (!coinByExchange.containsKey(exchangeName)) {
+			List<Coin> coins = new ArrayList();
+			coins.add(coin);
+			coinByExchange.put(exchangeName, coins);
+		} else {
+			List<Coin> list = coinByExchange.get(exchangeName);
+			list.add(coin);
+			coinByExchange.put(exchangeName, list);
+		}
+		
 	}
 
 	/**
@@ -89,31 +143,23 @@ public class API {
 	 * @throws MalformedURLException
 	 */
 
-	public void getAllCoin() throws MalformedURLException {
-		myCoin = new ArrayList<Coin>();
+	public void getAllCoins() throws MalformedURLException {
+		//coinList = new ArrayList<Coin>();
 		JsonElement assetsList = new JsonObject();
 		assetsList = getJSON(ASSETS_URL).get("result").getAsJsonArray();
 		for (JsonElement element : assetsList.getAsJsonArray()) {
 			String symbol = element.getAsJsonObject().get("symbol").getAsString();
 			String name = element.getAsJsonObject().get("name").getAsString();
 			boolean fiat = Boolean.valueOf(element.getAsJsonObject().get("fiat").getAsBoolean());
-			myCoin.add(new Coin(name, symbol, fiat));
+			coinList.add(new Coin(name, symbol, fiat));
 			coinCount ++;
 		}
 
-		for (Coin coin : myCoin) {
+		for (Coin coin : coinList) {
 			System.out.println(coin.toString());
 		}
 
 	}
-
-//	public float getPrice(Market market) throws MalformedURLException {
-//		String url = market.getUrlTrade() + "/price";
-//		JsonElement element = new JsonObject();
-//		element = getJSON(url).get("result").getAsJsonArray();
-//		String price = element.getAsJsonObject().get("price").getAsString();
-//		return Float.valueOf(price);
-//	}
 
 	public float getPrice(String urlMarket) throws MalformedURLException {
 		String url = urlMarket + "/price";
@@ -144,4 +190,12 @@ public class API {
 		JsonObject oggetto = root.getAsJsonObject();
 		return oggetto;
 	}
+	
+//	public float getPrice(Market market) throws MalformedURLException {
+//	String url = market.getUrlTrade() + "/price";
+//	JsonElement element = new JsonObject();
+//	element = getJSON(url).get("result").getAsJsonArray();
+//	String price = element.getAsJsonObject().get("price").getAsString();
+//	return Float.valueOf(price);
+//}
 }

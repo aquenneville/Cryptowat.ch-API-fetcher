@@ -1,15 +1,15 @@
 package github.aq.cryptowatchapiassetfetcher;
 import java.net.MalformedURLException;
-import github.aq.cryptowatchapiassetfetcher.service.API;
+import github.aq.cryptowatchapiassetfetcher.service.CryptowatchApiCrawler;
 
 public class CryptowatchApiAssetFetcher {
 
-	static API api;
+	static CryptowatchApiCrawler api;
 
 	public static void main(String[] args) throws MalformedURLException {
 		// TODO Auto-generated method stub
-		api = new API();
-		api.getCoin();
+		api = new CryptowatchApiCrawler();
+		api.crawl();
 
 	}
 
