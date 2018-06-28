@@ -10,6 +10,7 @@ git clone project, package jar with maven and run with java.
 <img width="250" alt="number of coins by exchange" src="charts/pair-count-by-exchange.png">
 <img width="250" alt="number of coins by exchange" src="charts/coin-by-exchange-count.png">
 <img width="250" alt="number of coins by exchange" src="charts/coin-by-base-pairs-count.png">
+
 # TODO
 - [x] sort assets by highest number of markets
 - [x] group assets by exchange (list asset with 2,3,4 and eq or gt 5 exchanges)
