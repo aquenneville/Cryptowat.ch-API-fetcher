@@ -9,7 +9,7 @@ git clone project, package jar with maven and run with java.
 # Charts 
 <img width="250" alt="number of coins by exchange" src="charts/pair-count-by-exchange.png">
 <img width="250" alt="number of coins by exchange" src="charts/coin-by-exchange-count.png">
-<img width="250" alt="number of coins by exchange" src="charts/coin-by-base-pairs-count.png">
+
 
 # TODO
 - [x] sort assets by highest number of markets
