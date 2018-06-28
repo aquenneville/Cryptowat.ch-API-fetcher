@@ -7,6 +7,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -31,9 +32,16 @@ public class CryptowatchApiCrawler {
 
 	// This is the list of Main coin (ETH,BTC)
 	public List<Coin> coinList = new ArrayList<Coin>();
-	Map<String, Set<Coin>> coinByExchange = new HashMap<String, Set<Coin>>();
-	Map<String, Integer> coinByExchangeCount = new HashMap<String, Integer>();
-	Map<String, Set<String>> exchangeByCoin = new HashMap<String, Set<String>>();
+	
+	Map<String, Set<Coin>> coinListByExchange = new HashMap<String, Set<Coin>>(); // exchange and its coin list
+	Map<String, Integer> pairsCountByCoin = new HashMap<String, Integer>(); // coin - pairs count
+	Map<String, Set<String>> pairsByExchange = new HashMap<String, Set<String>>();
+	Map<String, Integer> pairsCountByExchange = new HashMap<String, Integer>(); // exchange - pairs count
+	
+	//Map<String, Integer> coinByExchangeCount = new HashMap<String, Integer>();
+	Map<String, Set<String>> exchangeByCoin = new HashMap<String, Set<String>>(); // coin - exchange list
+	Map<String, Integer> exchangesCountByCoin = new HashMap<String, Integer>(); // coin - exchange count
+	
 	public String ASSETS_URL = "https://api.cryptowat.ch/assets"; // this API will be used for retrieve every coin info
 
 	/**
@@ -64,31 +72,74 @@ public class CryptowatchApiCrawler {
 						//String exchangeName = parseExchangeName(urlTrade);
 						collectCoinByExchange(coin, marketName);
 						collectExchangeByCoin(coin, marketName);
+						collectMarketPairsByExchange(urlTrade);
+						
+					}
+					if (!coinListByExchange.containsKey(coin.getName())) {
+						if (coin.getMarket() != null) 
+							pairsCountByCoin.put(coin.getName(), coin.getMarket().size());
+					} else {
+						if (coin.getMarket() != null) 
+							pairsCountByCoin.put(coin.getName(), pairsCountByCoin.get(coin.getName()) + coin.getMarket().size());
 					}
 				}
+				
 				System.out.println(coin.toString());
 				Dumper.dumpToFile(coin.toString(), "storage/cryptowatch-assets-" + coin.getName().toLowerCase() + ".json");
 			}
+			for (Map.Entry<String, Set<String>> entry: exchangeByCoin.entrySet()){
+				exchangesCountByCoin.put(entry.getKey(), entry.getValue().size());
+			}
+			
+			
 		}
-
+		for (Map.Entry<String, Set<String>> entry: pairsByExchange.entrySet()){
+			pairsCountByExchange.put(entry.getKey(), entry.getValue().size());
+		}
+		
 		for (Coin coin : coinList) {
 			System.out.println(coin.toString());
 		}
 		
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		String assetListInJson = gson.toJson(coinList);
-		Dumper.dumpToFile(assetListInJson, "storage/cryptowatch-assets-list.json");
+		Dumper.dumpToFile(assetListInJson, "storage/stats/cryptowatch-assets-list.json");
 		System.out.println("coin count: "+coinCount);
 		
-		String coinsByExchange = gson.toJson(coinByExchange);
-		Dumper.dumpToFile(coinsByExchange, "storage/cryptowatch-assets-by-exchange.json");
+		// number of coins by exchange
+		String jsonCoinListByExchange = gson.toJson(coinListByExchange);
+		Dumper.dumpToFile(jsonCoinListByExchange, "storage/stats/cryptowatch-assets-by-exchange.json");
 		
-	    String coinsByExchangeCount = gson.toJson(coinByExchangeCount);
-	    Dumper.dumpToFile(coinsByExchangeCount, "storage/cryptowatch-assets-by-exchange-count.json");
-		
-		String exchangesByCoin = gson.toJson(exchangeByCoin);
-		Dumper.dumpToFile(exchangesByCoin, "storage/cryptowatch-exchanges-by-coins.json");
+		String jsonExchangesByCoin = gson.toJson(exchangeByCoin);
+		Dumper.dumpToFile(jsonExchangesByCoin, "storage/stats/cryptowatch-exchanges-by-coins.json");
 
+	    String jsonExchangesCountByCoin = gson.toJson(exchangesCountByCoin);
+	    Dumper.dumpToFile(jsonExchangesCountByCoin, "storage/stats/cryptowatch-assets-by-exchange-count.json");
+		
+		String jsonPairCountByExchange = gson.toJson(pairsCountByExchange);
+		Dumper.dumpToFile(jsonPairCountByExchange, "storage/stats/cryptowatch-exchanges-pairs-count.json");
+		
+		String jsonPairCountByCoin = gson.toJson(pairsCountByCoin);
+		Dumper.dumpToFile(jsonPairCountByCoin, "storage/stats/cryptowatch-coin-pairs-count.json");
+
+	}
+
+	private void collectMarketPairsByExchange(String urlTrade) {
+		// TODO Auto-generated method stub
+		String exchangeName = parseExchangeName(urlTrade);
+		// api../markets/bitstamp/zza
+		String pair = urlTrade.split("markets")[1].split("/")[2];
+		
+		if (!pairsByExchange.containsKey(exchangeName)) {
+			Set<String> pairSet = new HashSet<String>();
+			pairSet.add(pair);
+			pairsByExchange.put(exchangeName, pairSet);
+		} else {
+			Set<String> pairSet = pairsByExchange.get(exchangeName);
+			pairSet.add(pair);
+			pairsByExchange.put(exchangeName, pairSet);
+		}
+		
 	}
 
 	private void collectExchangeByCoin(Coin coin, String exchangeName) {
@@ -97,12 +148,12 @@ public class CryptowatchApiCrawler {
 			Set<String> exchanges = new HashSet<String>();
 			exchanges.add(exchangeName);
 			exchangeByCoin.put(coin.getName(), exchanges);
-			coinByExchangeCount.put(coin.getName(), 1);
+			//coinByExchangeCount.put(coin.getName(), 1);
 		} else {
 			Set<String> set = exchangeByCoin.get(coin.getName());
 			set.add(exchangeName);
 			exchangeByCoin.put(coin.getName(), set);
-			coinByExchangeCount.put(coin.getName(), coinByExchangeCount.get(coin.getName()) + 1);
+			//coinByExchangeCount.put(coin.getName(), coinByExchangeCount.get(coin.getName()) + 1);
 		}
 	}
 
@@ -118,18 +169,22 @@ public class CryptowatchApiCrawler {
 
 	private void collectCoinByExchange(Coin coin, String exchangeName) {
 
-		if (!coinByExchange.containsKey(exchangeName)) {
+		if (!coinListByExchange.containsKey(exchangeName)) {
 			Set<Coin> coins = new HashSet<Coin>();
-			coin.setMarket(null);
+			//coin.setMarket(null);
 			coins.add(coin);
-			coinByExchange.put(exchangeName, coins);
-			
+			coinListByExchange.put(exchangeName, coins);
+			//if (coin.getMarket() != null) {
+			//	pairsCountByExchange.put(exchangeName, coin.getMarket().size());
+			//}
 		} else {
-			Set<Coin> set = coinByExchange.get(exchangeName);
-			coin.setMarket(null);
+			Set<Coin> set = coinListByExchange.get(exchangeName);
+			//coin.setMarket(null);
 			set.add(coin);
-			coinByExchange.put(exchangeName, set);
-			
+			coinListByExchange.put(exchangeName, set);
+			//if (coin.getMarket() != null) {
+				//pairsCountByExchange.put(exchangeName, pairsCountByExchange.get(exchangeName) + coin.getMarket().size());
+			//}
 		}
 		
 	}
