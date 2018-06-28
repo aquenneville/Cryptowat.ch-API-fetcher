@@ -7,10 +7,11 @@ cryptowatch endpoint: https://api.cryptowat.ch/assets into a json file.
 git clone project, package jar with maven and run with java. 
 
 # Charts 
-<img width="250" alt="number of coins by exchange" src="coin-count-by-exchange2.png">
+<img width="250" alt="number of coins by exchange" src="charts/pair-count-by-exchange.png">
+<img width="250" alt="number of coins by exchange" src="charts/coin-by-exchange-count.png">
 
 # TODO
-- [ ] sort assets by highest number of markets
-- [ ] group assets by exchange
-- [ ] list asset with 2,3,4 and eq or gt 5 exchanges
+- [x] sort assets by highest number of markets
+- [x] group assets by exchange (list asset with 2,3,4 and eq or gt 5 exchanges)
+- [ ] create spring boot app
 
