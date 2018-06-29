@@ -23,8 +23,8 @@ Chart #2:
 
 Chart #3: 
 - This chart shows the number of base pair markets for each coin. 
-- Higher the number higher exchanges will offer a high number of different fiat or crypto markets to get the coin. 
-- Higher the number, higher fiat market penetration, higher demand. 
+- Higher the number higher the chance the exchanges will offer a high number of different fiat or crypto markets to get the coin. 
+- Higher the number, higher fiat/exchange market penetration, higher demand. 
 
 <img width="250" alt="number of pair markets for this coin (fiat market penetration)" src="charts/coin-by-base-pairs-count.png">
 
