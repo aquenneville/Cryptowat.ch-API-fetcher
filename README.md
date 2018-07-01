@@ -16,14 +16,14 @@ Chart #1:
 
 Chart #2: 
 - This chart shows how many exchanges (on 31) have this coin. 
-- For example btc has been added on 31 exchanges. 
-- Higher the number, the higher degree of liquidity. Btc is the conservative choice here.
+- For example btc has been added on 31 exchanges and Civic (on the right) has 4.
+- Higher the number, the higher degree of liquidity. Btc is the conservative choice here. 
 
 <img width="250" alt="coin frequency on 31 exchanges " src="charts/coin-by-exchange-count.png">
 
 Chart #3: 
-- This chart shows the number of base pair markets for each coin. 
-- Higher the number higher the chance the exchanges will offer a high number of different fiat or crypto markets to get the coin. 
+- This chart shows the number of total none unique base pair markets for each coin. 
+- Higher the number higher the diversity of crypto markets (or fiat) will be available to get the coin. To get Civic you can either trade btc, eth or binance coin. To get btc hou can trade pratically any digital coin or fiat.
 - Higher the number, higher fiat/exchange market penetration, higher demand. 
 
 <img width="250" alt="number of pair markets for this coin (fiat market penetration)" src="charts/coin-by-base-pairs-count.png">
